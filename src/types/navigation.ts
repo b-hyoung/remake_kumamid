@@ -9,7 +9,7 @@ export type years = {
 
 export type headerList = {
     page: string,
-    path: UrlObject | string,
+    path: UrlObject,
     label: string
     subItems?: headerList[]
 };
