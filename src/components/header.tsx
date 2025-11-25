@@ -63,7 +63,7 @@ export default function Header() {
 
                 <div className="inner flex flex-row pt-5">
                     <h1 className="logo absolute  top-13 left-15">
-                        <Link href={navItems[0].path}>
+                        <Link href="/">
                             <Image
                             className="align-middle" 
                             src="/img/kumamid_profile.png"

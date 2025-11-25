@@ -1,3 +1,8 @@
+"use client"
+
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
 import type { Metadata } from "next";
 import './globals.css'
 import Header from '../components/header'
@@ -8,12 +13,23 @@ type LayoutProps = {
 };
 
 // 메타데이터 설정
-export const metadata : Metadata = {
-  title : "한국영상대학교 졸업작품",
-  description : "한국영상대학교 졸업작품전 정식 웹 사이트입니다."
-}
+// export const metadata : Metadata = {
+//   title : "한국영상대학교 졸업작품",
+//   description : "한국영상대학교 졸업작품전 정식 웹 사이트입니다."
+// }
 
 export default function Layout({children}: LayoutProps) {
+  const pathName = usePathname();
+  const [isHome, setIsHome] = useState<boolean>(false);
+  
+  useEffect(() => {
+    if(pathName === '/') {
+      setIsHome(true);
+    } else {
+      setIsHome(false);
+    }
+  }, [pathName])
+
   return (
     <html lang="ko">
       <head>
@@ -25,7 +41,7 @@ export default function Layout({children}: LayoutProps) {
         {/* 본문  */}
         <main>{children}</main>
         {/* 푸터 고정  */}
-        <Footer />
+        { !isHome && <Footer /> }
       </body>
     </html>
   );

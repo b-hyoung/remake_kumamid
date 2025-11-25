@@ -1,4 +1,4 @@
-import {years,headerList} from '../types/navigation'
+import {years,headerList, IntroNavItem} from '../types/navigation'
 
 export const yearData: years[] = [
     { year: 2025, status: 'active', path: { pathname: "/intro", query: { year: 2025 } } },
@@ -25,3 +25,10 @@ export const headerNav = (currentYear: number): headerList[] => [
     { page: "designer", label: "Designer", path: { pathname: "/designer", query: { year: currentYear } } },
     { page: "thanksTo", label: "Thanks to", path: { pathname: "/thanksTo", query: { year: currentYear } } },
 ];
+    
+    export const introNav: IntroNavItem[] = [
+        { label: 'Works', path: { pathname: '/works', query: { year: 2025 } } },
+        { label: 'Designer', path: { pathname: '/designer', query: { year: 2025 } } },
+        { label: 'Thanks To', path: { pathname: '/thanksTo', query: { year: 2025 } } },
+    ];
+    

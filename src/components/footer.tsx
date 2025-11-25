@@ -1,9 +1,8 @@
-type ComponentNameProps = {
-  
-};
+export default function footer() {
 
-export default function ComponentName({}: ComponentNameProps) {
   return (
-    <div></div>
+    <div className="absolute bottom-6 w-full justify-center text-center">
+      © <span id="footer-year"></span>. DESIGNTHEHAM Co. all rights reserved.
+    </div>
   );
 }
