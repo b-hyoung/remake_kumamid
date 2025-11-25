@@ -43,6 +43,7 @@ export default function Header() {
 
     return (
         <>
+        {currentPathname != "/" ? 
             <header className={headerClass}>
                 <div className="selectYear h-[45px] p-1 border-b border-gray-500">
                     <div className="year-selector absolute right-15 top-1 flex flex-row gap-7 text-[15px] p-2 text-bold">
@@ -114,6 +115,8 @@ export default function Header() {
                     </nav>
                 </div>
             </header>
+            :
+            <></> }
         </>
     );
 }
