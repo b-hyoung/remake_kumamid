@@ -1,65 +1,67 @@
+"use client"
+import { yearData } from "@/constants/navData";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
+
+
+
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="w-full h-screen overflow-hidden relative flex flex-col items-center justify-center">
+      {/*<!-- 🔴 비디오 오버레이 및 영상 --> */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10 opacity-60">
+        <video className="w-full h-full object-cover"
+          src="/video/2025_intro.mp4"
+          autoPlay loop muted playsInline
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </div>
+
+      {/*<!-- 🔵 연도 목록 모듈 삽입 영역 -->*/}
+      <div className="z-20 w-full max-w-4xl text-5xl cursor-pointer">
+        <div className="text-white/70 font-extralight gap-20 flex flex-row justify-center
+          
+          /* 👇 [&>p]를 [&>*]로 변경: p태그와 Link(a태그) 모두에게 스타일 적용 */
+          [&>*]:transition-colors [&>*]:duration-300 [&>*]:hover:text-white
+        ">
+
+          {yearData.map((item) => {
+            // 1. 활성화 상태 (Link 사용)
+            if (item.status === 'active' && item.path) {
+              return (
+                <Link
+                  key={item.year}
+                  href={item.path}
+                  className={item.year === 2025 ? "font-semibold" : ""} // 2025년만 기본적으로 밝게/굵게
+                >
+                  {item.year}
+                </Link>
+              );
+            }
+
+            // 2. 준비중 상태 (p 태그 + alert)
+            return (
+              <p
+                key={item.year}
+                onClick={() => item.message && alert(item.message)}
+              >
+                {item.year}
+              </p>
+            );
+          })}
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
+
+      {/*<!-- 하단 설명 -->*/}
+      <div className="absolute bottom-10 z-20 text-center text-white/80 text-sm leading-relaxed font-light">
+        <p>
+          한국영상대학교 영상디자인학과 졸업작품 전시회<br />
+          Exhibition of Graduation Projects from the Department of Film Design at Korea National University of Arts
+        </p>
+      </div>
     </div>
-  );
+
+  )
 }
