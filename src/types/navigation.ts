@@ -9,7 +9,12 @@ export type years = {
 
 export type headerList = {
     page: string,
-    path: UrlObject,
+    path: UrlObject|string,
     label: string
     subItems?: headerList[]
+};
+
+export type IntroNavItem = {
+    label: string;
+    path: UrlObject;
 };

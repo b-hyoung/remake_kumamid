@@ -4,10 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-
-
-
-
   return (
     <div className="w-full h-screen overflow-hidden relative flex flex-col items-center justify-center">
       {/*<!-- 🔴 비디오 오버레이 및 영상 --> */}
@@ -23,7 +19,9 @@ export default function Home() {
         <div className="text-white/70 font-extralight gap-20 flex flex-row justify-center
           
           /* 👇 [&>p]를 [&>*]로 변경: p태그와 Link(a태그) 모두에게 스타일 적용 */
-          [&>*]:transition-colors [&>*]:duration-300 [&>*]:hover:text-white
+          [&>*]:transition-colors
+          [&>*]:duration-300
+          [&>*]:hover:text-white
         ">
 
           {yearData.map((item) => {
