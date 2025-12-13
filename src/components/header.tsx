@@ -17,106 +17,188 @@ function getPathname(path: UrlObject | string): string {
     return path.pathname ?? '';
 }
 
-export default function Header() {
-    const params = useSearchParams(); 
-    const currentYear = parseInt(params.get("year") || "2025"); // 선택된 파라미터 년도 , 없으면 2025
-    const currentPathname = usePathname();
-    const navItems = headerNav(currentYear); // 헤더 값
+// Sub-component for Desktop Navigation to isolate state and fix animation bug
+function DesktopNavigation({ navItems, currentPathname, currentYear }: { navItems: headerList[], currentPathname: string, currentYear: number }) {
+    const [animateDesktopUnderline, setAnimateDesktopUnderline] = useState(false);
 
-    const [isScrolled , setIsScrolled] = useState(false) // 헤더 백그라운드 애니메이션 처리를 위한 변수
-
-    // 스크롤이 50px아래로 내려가면 애니메이션 실행
     useEffect(() => {
-        const handleScroll = () =>{
-            if(window.scrollY > 50){
-                setIsScrolled(true)
-            }else{
-                setIsScrolled(false)
-            }
+        // Trigger animation on component mount. The key change will cause a re-mount.
+        const timer = setTimeout(() => {
+            setAnimateDesktopUnderline(true);
+        }, 150);
+        return () => clearTimeout(timer);
+    }, []); // Empty dependency array ensures this runs only once on mount
+
+    return (
+        <nav className="hidden md:flex absolute top-0 left-1/2 -translate-x-1/2 items-end gap-4 lg:gap-6 xl:gap-10 h-full">
+            {navItems.map((item: headerList) => {
+                const linkPathname = getPathname(item.path);
+                const isActive = item.subItems 
+                    ? currentPathname.startsWith(linkPathname)
+                    : currentPathname === linkPathname;
+
+                const displayLabel = item.page === 'intro' ? `${item.label} ${currentYear}` : item.label;
+                
+                const activeClass = "text-[#434343] font-bold";
+                // New class for the linear text wipe animation
+                const inactiveClass = "font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 from-50% to-[rgba(48,48,48,0.5)] to-50% bg-[length:200%_100%] bg-[position:100%] hover:bg-[position:0%] transition-background-position duration-500 ease-in-out";
+
+                return (
+                    <div key={item.page} className="relative h-full flex items-end group pb-3"> {/* items-end and pb-2 here */}
+                        <Link 
+                            href={item.path} 
+                            className={`${isActive ? activeClass : inactiveClass} text-sm lg:text-base xl:text-base px-2`}
+                        >
+                            {displayLabel}
+                        </Link>
+                        
+                        {/* Active Underline */}
+                        {isActive && (
+                            <div 
+                                className="absolute bottom-0 left-0 w-full h-[5px] bg-red-500 origin-left transition-transform duration-700 ease-linear" 
+                                style={{ transform: animateDesktopUnderline ? 'scaleX(1)' : 'scaleX(0)' }} 
+                            />
+                        )}
+
+                        {/* Dropdown for Works */}
+                        {item.subItems && (
+                            <>
+                                <div className="absolute top-full h-4 w-full"></div>
+                                <div className="absolute top-full left-0 mt-2 hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48">
+                                    <ul className="flex flex-col">
+                                        {item.subItems.map((subItem) => (
+                                            <li key={subItem.page}>
+                                                <Link href={subItem.path} className="block px-6 py-2 text-gray-700 hover:bg-gray-100 whitespace-nowrap">
+                                                    {subItem.label}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )
+            })}
+        </nav>
+    );
+}
+
+
+export default function Header() {
+    const params = useSearchParams();
+    const currentYear = parseInt(params.get("year") || "2025");
+    const currentPathname = usePathname();
+    const navItems = headerNav(currentYear);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [animateUnderline, setAnimateUnderline] = useState(false);
+
+    useEffect(() => {
+        if (isMenuOpen) {
+            const timer = setTimeout(() => {
+                setAnimateUnderline(true);
+            }, 150);
+            return () => clearTimeout(timer);
+        } else {
+            setAnimateUnderline(false);
         }
-        window.addEventListener('scroll' , handleScroll)
-        return () => window.removeEventListener('scroll' , handleScroll)
-    },[])
-    // 스크롤 다운 시 색 변경 애니메이션
-    const headerClass = `fixed top-0 left-0 w-full min-h-[100px] z-50 flex flex-col shadow-md transition-colors duration-300
-                        ${!isScrolled ? 'bg-white text-black' : 'bg-black text-white'}`
+    }, [isMenuOpen]);
+
+    const yearHeaderClass = "bg-white border-b border-gray-200";
+    const mainHeaderClass = "bg-white";
+
+    const YearLinks = () => (
+        <div className="flex justify-end items-center gap-4 text-sm font-bold p-2 pr-4 md:pr-8">
+            {yearData.map((item: years) => {
+                const isActive = item.year === currentYear;
+                if (item.status === "active" && item.path) {
+                    return (
+                        <Link key={item.year} href={item.path} className={isActive ? "text-[#434343]" : "text-[#303030] hover:text-[#434343]"}>
+                            {item.year}
+                        </Link>
+                    )
+                } else {
+                    return (
+                        <div key={item.year} onClick={() => alert(item.message || "준비중입니다 !")} className="text-gray-400 cursor-pointer">
+                            {item.year}
+                        </div>
+                    )
+                }
+            })}
+        </div>
+    );
 
     return (
         <>
-        {currentPathname != "/" ? 
-            <header className={headerClass}>
-                <div className="selectYear h-[45px] p-1 border-b border-gray-500">
-                    <div className="year-selector absolute right-15 top-1 flex flex-row gap-7 text-[15px] p-2 text-bold">
-                        {yearData.map((item: years) => {
-                            if (item.status === "active" && item.path) {
-                                return (
-                                    <Link key={item.year} href={item.path} className={item.year == currentYear ? "text-[17px] text-[#ff6363] font-semibold" : 'text-[#30303080]'}>{item.year}</Link>
-                                )
-                            }else{
-                                return (
-                                    <div key={item.year} onClick={() => alert("아직 준비중입니다 !")} className={'text-[#30303080] cursor-pointer'}>{item.year}</div>
-                                )
-                            }
-                        })}
-                    </div>
-                </div>
+            {currentPathname !== "/" && (
+                <>
+                    <header className="fixed top-0 left-0 w-full z-50 shadow-md">
+                        {/* Year Selection Bar */}
+                        <div className={yearHeaderClass}>
+                            <YearLinks />
+                        </div>
 
-                <div className="inner flex flex-row pt-5">
-                    <h1 className="logo absolute  top-13 left-15">
-                        <Link href="/">
-                            <Image
-                            className="align-middle" 
-                            src="/img/kumamid_profile.png"
-                            alt="kumamid logo"
-                            width={200}
-                            height={40}
-                            priority
-                              />
-                        </Link>
-                    </h1>
-                    <label className="menu-icon text-[30px] md-block absolute right-5 " htmlFor="menu-toggle">&#9776;</label>
-                    <nav className="nav flex flex-row align-center m-auto">
-                        <ul className="flex space-x-8 item-center">
-                            {navItems.map((item: headerList) => {
-                                const linkPathname = getPathname(item.path);
-                                const isActiveLink = currentPathname === linkPathname;
-                                const linkClassName = `${isActiveLink ? 'text-black' : 'text-[#30303080]'} font-medium tracking-wider text-lg`;
-                                const liBorderClass = isActiveLink ? "border-b-[5px] border-[#ff6363]" : "";
+                        {/* Main Header */}
+                        <div className={`${mainHeaderClass} relative flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[50px]`}>
+                            {/* Logo */}
+                            <div className="logo">
+                                <Link href={{ pathname: '/intro', query: { year: currentYear } }}>
+                                    <Image
+                                        src="/img/kumamid_profile.png"
+                                        alt="kumamid logo"
+                                        width={180}
+                                        height={35}
+                                        priority
+                                    />
+                                </Link>
+                            </div>
 
-                                //work인 경우에는 드롭다운 형태로 출력
-                                if (item.subItems) {
+                            {/* Desktop Navigation */}
+                            <DesktopNavigation key={currentPathname} navItems={navItems} currentPathname={currentPathname} currentYear={currentYear} />
+
+                            {/* Hamburger Menu Button */}
+                            <div className="md:hidden">
+                                <button onClick={() => setIsMenuOpen(true)} className="text-3xl text-gray-800">
+                                    &#9776;
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Mobile Menu Overlay */}
+                    {isMenuOpen && (
+                        <div className="fixed inset-0 bg-[rgba(0,0,0,0.8)] z-[100] flex flex-col items-center justify-center">
+                            <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-4xl font-thin">
+                                &times;
+                            </button>
+                            <nav className="flex flex-col items-center gap-6 text-center">
+                                {navItems.map((item: headerList) => {
+                                    const linkPathname = getPathname(item.path);
+                                    const isActive = currentPathname === linkPathname;
+                                    
+                                    const label = item.page === 'intro' ? `Exhibition ${currentYear}` : item.label;
+
                                     return (
-                                        <li key={item.page} className={`relative dropdown pb-[12px] group ${liBorderClass}`}>
-                                            <Link href={item.path} className={`${linkClassName} block w-full`}>{item.label}</Link>
-                                            <ul className="absolute top-11 left-0 dropdown-menu hidden group-hover:block transition-all duration-300 ease-out transform opactity-0
-                                             bg-gray-100 shadow-lg rounded-md py-3 w-55 duration-300 ">
-                                                {item.subItems.map((subItem: headerList) => {
-                                                    const subLinkPathname = getPathname(subItem.path);
-                                                    const isSubActiveLink = currentPathname === subLinkPathname;
-                                                    const subLinkClassName = isSubActiveLink ? 'text-header-default' : 'text-gray-700';
-                                                    return (
-                                                        <li key={subItem.page} className="px-8 py-3">
-                                                            <Link href={subItem.path} className={`${subLinkClassName} block w-full`}>{subItem.label}</Link>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
-                                        </li>
-                                    );
-                                } else {
-                                    return (
-                                        <li key={item.page} className={`${liBorderClass} pb-3 `}>
-                                            <Link href={item.path} className={linkClassName}>{item.label}</Link>
-                                        </li>
-                                    );
-                                }
-                            })}
-                        </ul>
-                    </nav>
-                </div>
-            </header>
-            :
-            <></> }
+                                        <div key={item.page} className="flex flex-col items-center gap-2">
+                                            <Link href={item.path} className={`${isActive ? 'text-red-500 font-bold' : 'text-white font-bold'} text-2xl hover:text-red-400`} onClick={() => setIsMenuOpen(false)}>
+                                                {label}
+                                            </Link>
+                                            
+                                            {isActive && (
+                                                <div 
+                                                    className="w-16 h-1 bg-red-500 origin-left transition-transform duration-500 ease-out" 
+                                                    style={{ transform: animateUnderline ? 'scaleX(1)' : 'scaleX(0)' }} 
+                                                />
+                                            )}
+                                        </div>
+                                    )
+                                })}
+                            </nav>
+                        </div>
+                    )}
+                </>
+            )}
         </>
     );
 }
