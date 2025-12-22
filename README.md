@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎓 졸업작품전 웹사이트 Next.js 리팩토링
 
-## Getting Started
+본 문서는  
+기존 **JavaScript 기반 동적 웹사이트 구현 이후**,  
+해당 웹을 **Next.js + TypeScript + Tailwind CSS**로 리팩토링한 과정을 정리한 문서입니다.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🧩 기존 구현 상태 (리팩토링 이전)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- HTML / CSS / JavaScript 기반 웹사이트
+- JS를 통해 **년도별 JSON 데이터 렌더링 구조는 이미 구현된 상태**
+- Firebase Cloud Storage를 통해 학생 작품 이미지 관리
+- 동적 데이터 구조 자체에는 큰 문제 없음
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+👉 문제는 **구조와 성능, 유지보수성**에 있었습니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ❓ Why Next.js? (변경 이유)
 
-To learn more about Next.js, take a look at the following resources:
+### 1. 발견된 문제점
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### 🚨 초기 로딩 속도 문제
+- 고용량 사진 및 영상(학생 작품 원본)을 사용하는 구조
+- 첫 진입 시 **이미지 로딩에 약 2~4초 소요**
+- 작품 특성상 이미지 품질을 크게 낮추기 어려운 제약 존재
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+#### 🚨 사용자 경험(UX) 저하
+- 시작 화면의 영상 로딩 지연으로 콘텐츠 노출 전 이탈 발생
+- 로딩 스피너를 통해 임시 대응은 했으나,
+  **이미지 로딩 자체로 인한 UX 저하를 근본적으로 해결하지 못함**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### 🚨 유지보수의 어려움
+- 애니메이션, 레이아웃, 반응형 스타일이 하나의 CSS에 강하게 결합
+- 특정 스타일 수정 시 연쇄적인 레이아웃 깨짐 발생
+- 작은 UI 수정에도 탐색·수정 비용 과다
+
+---
+
+## 🛠 문제 해결을 위한 기술 도입
+
+### (Next.js) SSR 기반 초기 화면 개선
+- SSR을 적용해 **페이지 레이아웃을 서버에서 미리 렌더링**
+- 사용자가 JS 실행 전에도 기본 화면 구조를 빠르게 인지 가능
+- 리스트 페이지에서는  
+  **고용량 원본 이미지 대신 표시 크기에 맞춘 썸네일 기반 로딩 구조로 개선**
+
+👉 이를 통해 초기 로딩 시간을  
+**기존 2~4초 → 1초대 수준으로 단축**하며 체감 성능을 개선
+
+---
+
+### (TypeScript) 데이터 안정성 강화
+- Firebase에서 관리되는 학생 데이터(학번, 나이, 이미지 경로 등)를
+  TypeScript 인터페이스로 명확히 정의
+- 데이터 추가·수정 시 타입 오류를 사전에 방지
+- 런타임 오류 가능성을 줄여 안정적인 데이터 관리 구조 확보
+
+---
+
+### (Tailwind CSS) 유지보수성 개선
+- 스타일링 방식을 역할에 따라 분리
+  - 공통 UI / 반응형 처리 → Tailwind CSS
+  - 복잡한 애니메이션 및 특수 스타일 → 일반 CSS 파일
+- 스타일 결합도를 낮춰 수정 범위를 최소화
+- UI 변경 시 영향 범위 예측이 쉬운 구조로 개선
+
+---
+
+## 📌 정리
+
+이번 리팩토링은  
+**이미 구현된 동적 데이터 구조를 유지한 채**,  
+Next.js를 도입해 **성능·안정성·유지보수성**을 개선하는 데 초점을 맞췄습니다.
+
+- 구조 변경 ❌ → **구조 개선 ⭕**
+- 기능 추가 ❌ → **기존 기능 안정화 ⭕**
+- 디자인 변경 ❌ → **기술 리팩토링 ⭕**
+
+---
+
+## 👤 담당
+- 박형석 (단독 개발)

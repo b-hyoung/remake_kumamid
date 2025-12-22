@@ -4,10 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-
-
-
-
   return (
     <div className="w-full h-screen overflow-hidden relative flex flex-col items-center justify-center">
       {/*<!-- 🔴 비디오 오버레이 및 영상 --> */}
@@ -19,11 +15,13 @@ export default function Home() {
       </div>
 
       {/*<!-- 🔵 연도 목록 모듈 삽입 영역 -->*/}
-      <div className="z-20 w-full max-w-4xl text-5xl cursor-pointer">
-        <div className="text-white/70 font-extralight gap-20 flex flex-row justify-center
+      <div className="z-20 w-full max-w-4xl text-3xl md:text-5xl cursor-pointer">
+        <div className="text-white/70 font-extralight gap-8 md:gap-20 flex flex-col md:flex-row justify-center items-center
           
           /* 👇 [&>p]를 [&>*]로 변경: p태그와 Link(a태그) 모두에게 스타일 적용 */
-          [&>*]:transition-colors [&>*]:duration-300 [&>*]:hover:text-white
+          [&>*]:transition-colors
+          [&>*]:duration-300
+          [&>*]:hover:text-white
         ">
 
           {yearData.map((item) => {
@@ -55,7 +53,7 @@ export default function Home() {
       </div>
 
       {/*<!-- 하단 설명 -->*/}
-      <div className="absolute bottom-10 z-20 text-center text-white/80 text-sm leading-relaxed font-light">
+      <div className="absolute bottom-5 md:bottom-10 z-20 text-center text-white/80 text-xs md:text-sm leading-relaxed font-light px-4">
         <p>
           한국영상대학교 영상디자인학과 졸업작품 전시회<br />
           Exhibition of Graduation Projects from the Department of Film Design at Korea National University of Arts

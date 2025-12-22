@@ -24,3 +24,27 @@ body {
   color: var(--foreground);
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
+
+html, body {
+  height: 100%;
+}
+
+/* Tab Button Animation - 요청에 따라 추가 */
+.tab-button-animation span {
+  display: inline-block;
+  /* 그라데이션: 활성(#ffc107) 50%, 비활성(#959595) 50% */
+  background: linear-gradient(to right, #ffc107 50%, #959595 50%);
+  background-size: 200% 100%;
+  /* 기본 상태: 비활성 색상(#959595)이 보이도록 오른쪽 끝에 위치 */
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* 애니메이션 효과: 부드러운 색상 전환 */
+  transition: background-position 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.tab-button-animation.active span {
+  /* 활성 상태: 활성 색상(#ffc107)이 보이도록 왼쪽 끝으로 이동 */
+  background-position: 0 0;
+  font-weight: bold; /* 활성 탭 굵게 표시 */
+}

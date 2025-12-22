@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import './globals.css'
-import Header from '../components/header'
-import Footer from  '../components/footer'
-
-type LayoutProps = {
-  children : React.ReactNode
-};
+import './globals.css';
+import ClientLayout from './ClientLayout';
 
 // 메타데이터 설정
 export const metadata : Metadata = {
@@ -13,19 +8,19 @@ export const metadata : Metadata = {
   description : "한국영상대학교 졸업작품전 정식 웹 사이트입니다."
 }
 
-export default function Layout({children}: LayoutProps) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="ko">
-      <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
-      </head>
+      {/* globals.css에서 body에 Pretendard 폰트와 기본 스타일이 적용되므로 head에서 추가적인 폰트 CDN 링크 및 스타일은 제거합니다. */}
+      {/* Next.js 프로젝트의 기본 body 스타일은 globals.css에서 관리됩니다. */}
       <body>
-        {/* 헤더 고정  */}
-        <Header />
-        {/* 본문  */}
-        <main>{children}</main>
-        {/* 푸터 고정  */}
-        <Footer />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );
