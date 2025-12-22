@@ -1,39 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-
-// It is recommended to move this hook to a separate file in a hooks directory.
-const useScrollFadeIn = () => {
-  const dom = useRef<HTMLDivElement>(null);
-
-  const handleScroll = useCallback(([entry]) => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
-    }
-  }, []);
-
-  useEffect(() => {
-    let observer: IntersectionObserver;
-    const { current } = dom;
-
-    if (current) {
-      observer = new IntersectionObserver(handleScroll, { threshold: 0.1 });
-      observer.observe(current);
-
-      return () => observer && observer.disconnect();
-    }
-  }, [handleScroll]);
-
-  return {
-    ref: dom,
-    style: {
-      opacity: 0,
-      transform: 'translateY(20px)',
-      transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
-    },
-  };
-};
+import Link from 'next/link';
+import useScrollFadeIn from '@/hooks/useScrollFadeIn'; // Corrected import path
 
 const AboutPage = () => {
   const images = [
@@ -55,14 +24,15 @@ const AboutPage = () => {
     return () => clearInterval(interval);
   }, [images.length]);
 
-  const animatedItem1 = useScrollFadeIn();
-  const animatedItem2 = useScrollFadeIn();
-  const animatedItem3 = useScrollFadeIn();
-  const animatedItem4 = useScrollFadeIn();
-  const animatedItem5 = useScrollFadeIn();
+  // Using the custom hook with specific directions/delays if needed
+  const animatedItem1 = useScrollFadeIn('up', 0.5, 0);
+  const animatedItem2 = useScrollFadeIn('up', 0.5, 0.1);
+  const animatedItem3 = useScrollFadeIn('up', 0.5, 0.2);
+  const animatedItem4 = useScrollFadeIn('up', 0.5, 0.3);
+  const animatedItem5 = useScrollFadeIn('up', 0.5, 0.4);
 
   return (
-    <div className="bg-black text-white pt-30">
+    <div className="bg-black text-white pt-24 md:pt-32"> {/* Changed pt-30 to pt-24 (example, adjust as needed) */}
       <div className="flex flex-col lg:flex-row w-full h-auto lg:h-[500px] px-4 lg:px-[15%]">
         <div className="w-full lg:w-1/2 h-full relative overflow-hidden">
           <div
@@ -71,7 +41,7 @@ const AboutPage = () => {
           >
             {images.map((src, index) => (
               <div key={index} className="min-w-full h-full">
-                <Image src={src} alt="" width={500} height={500} className="w-full h-full object-cover" />
+                <Image src={src} alt={`Slide image ${index + 1}`} width={500} height={500} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
@@ -95,7 +65,7 @@ const AboutPage = () => {
       </div>
 
       <div className="flex justify-center items-center h-20">
-        <Image src="/img/icon/about_arrow.png" alt="arrow" width={15} height={20} />
+        <Image src="/img/icon/about_arrow.png" alt="Scroll down arrow" width={15} height={20} />
       </div>
 
       <div {...animatedItem1} className="px-4 lg:px-[15%] text-white">
@@ -167,26 +137,27 @@ const AboutPage = () => {
         </div>
         <div className="w-[70%] my-3 mx-auto flex items-center">
             <div className="flex items-center gap-2.5 flex-wrap max-w-md">
-                <a href="https://www.instagram.com/creative_md_kuma?igsh=cnlidmlxeG92ajl4" target="_blank">
-                    <Image src="/img/icon/sns_in.png" alt="Instagram" width={30} height={30} className="object-contain" />
+                <a href="https://www.instagram.com/creative_md_kuma?igsh=cnlidmlxeG92ajl4" target="_blank" rel="noopener noreferrer">
+                    <Image src="/img/icon/sns_in.png" alt="Instagram link" width={30} height={30} className="object-contain" />
                 </a>
-                <a href="https://www.youtube.com/@한국영상대영상디자인" target="_blank">
-                    <Image src="/img/icon/sns_yu.png" alt="YouTube" width={30} height={30} className="object-contain" />
+                <a href="https://www.youtube.com/@한국영상대영상디자인" target="_blank" rel="noopener noreferrer">
+                    <Image src="/img/icon/sns_yu.png" alt="YouTube link" width={30} height={30} className="object-contain" />
                 </a>
-                <a href="https://www.facebook.com/kuma.ads" target="_blank">
-                    <Image src="/img/icon/sns_fa.png" alt="Facebook" width={30} height={30} className="object-contain" />
+                <a href="https://www.facebook.com/kuma.ads" target="_blank" rel="noopener noreferrer">
+                    <Image src="/img/icon/sns_fa.png" alt="Facebook link" width={30} height={30} className="object-contain" />
                 </a>
-                <a href="https://blog.naver.com/advertising2020" target="_blank">
-                    <Image src="/img/icon/sns_blog.png" alt="Blog" width={30} height={30} className="object-contain" />
+                <a href="https://blog.naver.com/advertising2020" target="_blank" rel="noopener noreferrer">
+                    <Image src="/img/icon/sns_blog.png" alt="Blog link" width={30} height={30} className="object-contain" />
                 </a>
-                <a href="https://cafe.naver.com/kumaamd" target="_blank">
-                    <Image src="/img/icon/sns_cafe.png" alt="Cafe" width={30} height={30} className="object-contain" />
+                <a href="https://cafe.naver.com/kumaamd" target="_blank" rel="noopener noreferrer">
+                    <Image src="/img/icon/sns_cafe.png" alt="Cafe link" width={30} height={30} className="object-contain" />
                 </a>
             </div>
+            {/* Using Link for Next.js routing */}
             <div className="flex items-center ml-5 text-white">
-                <a href="/view/about.html?year=2023" className="mx-2.5 text-white no-underline">2023</a>
-                <a href="/view/about.html?year=2024" className="mx-2.5 text-white no-underline">2024</a>
-                <a href="/view/about.html?year=2025" className="mx-2.5 text-white no-underline">2025</a>
+                <Link href="/about?year=2023" className="mx-2.5 text-white no-underline" prefetch={false}>2023</Link>
+                <Link href="/about?year=2024" className="mx-2.5 text-white no-underline" prefetch={false}>2024</Link>
+                <Link href="/about?year=2025" className="mx-2.5 text-white no-underline" prefetch={false}>2025</Link>
             </div>
         </div>
     </div>
