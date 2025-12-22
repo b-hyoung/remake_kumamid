@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { firebaseConfig } from '@/lib/firebaseConfig';
 import type { FirebaseApp } from 'firebase/app';
 import type { Database } from 'firebase/database';
+import type { DataSnapshot } from "firebase/database";
 
 // --- Types ---
 interface Comment {
@@ -54,7 +55,7 @@ function ThanksToPageContent() {
             const { ref, onValue } = (window as any).firebase.database;
             const commentsRef = ref(dbRef.current, `thanksComments/${year}`);
             
-            const unsubscribe = onValue(commentsRef, (snapshot) => {
+            const unsubscribe = onValue(commentsRef, (snapshot:any) => {
                 const data = snapshot.val();
                 if (data) {
                     const commentsArray: Comment[] = Object.keys(data).map(key => ({
