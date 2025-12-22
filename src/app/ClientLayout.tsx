@@ -14,7 +14,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }, [pathName]);
 
   // 헤더의 총 높이를 대략 90px (50px + 40px) 정도로 계산하고, mt-24 (6rem = 96px)로 여유를 줍니다.
-  const mainContentMarginTop = pathName === "/" ? "" : "mt-24";
+  const mainContentMarginTop = pathName === "/" ? "" : "mt-20";
 
   return (
     <div className="flex flex-col min-h-screen">

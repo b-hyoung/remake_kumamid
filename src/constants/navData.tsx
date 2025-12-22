@@ -23,12 +23,12 @@ export const headerNav = (currentYear: number): headerList[] => [
         ]
     },
     { page: "designer", label: "Designer", path: { pathname: "/designer", query: { year: currentYear } } },
-    { page: "thanksTo", label: "Thanks to", path: { pathname: "/thanksTo", query: { year: currentYear } } },
+    { page: "thanksTo", label: "Thanks to", path: { pathname: "/thanksto", query: { year: currentYear } } },
 ];
     
     export const introNav: IntroNavItem[] = [
         { label: 'Works', path: { pathname: '/works', query: { year: 2025 } } },
         { label: 'Designer', path: { pathname: '/designer', query: { year: 2025 } } },
-        { label: 'Thanks To', path: { pathname: '/thanksTo', query: { year: 2025 } } },
+        { label: 'Thanks To', path: { pathname: '/thanksto', query: { year: 2025 } } },
     ];
     
