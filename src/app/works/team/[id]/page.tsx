@@ -10,6 +10,7 @@ interface TeamData {
     id: string;
     teamName: string;
     teamtitle?: string;
+     teamfolder?: string;
     client: string;
     teamSubTitle: string;
     teamMembers: string[];
