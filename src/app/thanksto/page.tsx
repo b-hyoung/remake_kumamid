@@ -5,8 +5,9 @@ import Script from 'next/script';
 import Link from 'next/link';
 import Image from 'next/image';
 import { firebaseConfig } from '@/lib/firebaseConfig';
-import type { FirebaseApp } from 'firebase/app';
-import type { Database } from 'firebase/database';
+// npm install 실패로 인해 타입 임포트 제거
+// import type { FirebaseApp } from 'firebase/app';
+// import type { Database } from 'firebase/database';
 
 // --- Types ---
 interface Comment {
@@ -39,9 +40,10 @@ function ThanksToPageContent() {
     const searchParams = useSearchParams();
     const year = searchParams.get('year') || '2025';
 
+    // Firebase 관련 타입을 any로 지정하여 빌드 에러 해결
     const [isFirebaseReady, setIsFirebaseReady] = useState(false);
-    const appRef = useRef<FirebaseApp | null>(null);
-    const dbRef = useRef<Database | null>(null);
+    const appRef = useRef<any | null>(null);
+    const dbRef = useRef<any | null>(null);
 
     const [comments, setComments] = useState<Comment[]>([]);
     const [name, setName] = useState('');
@@ -131,8 +133,10 @@ function ThanksToPageContent() {
             <Script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" strategy="lazyOnload" onReady={handleFirebaseReady} />
             <Script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" strategy="lazyOnload" onReady={handleFirebaseReady} />
             
+            {/* 최상위 div에서 pt-20 제거 */}
             <div className="flex-grow">
-                <div className="bg-white text-black pt-20 pb-10">
+                {/* 댓글 섹션 (흰색 배경) - 헤더 높이만큼 pt 추가 */}
+                <div className="bg-white text-black pt-32 pb-20">
                     <div className="max-w-6xl mx-auto px-4">
                         <div className="flex flex-col md:flex-row items-center gap-2 mb-2">
                             <input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="이름" maxLength={10} className="w-full md:w-1/5 p-3 border-none rounded-full bg-gray-100 text-sm focus:ring-2 focus:ring-black" />
@@ -157,8 +161,9 @@ function ThanksToPageContent() {
                     </div>
                 </div>
 
+                {/* 하단 정보 섹션 (검은색 배경) */}
                 <div className='bg-black text-white py-10'>
-                    <div className="w-full max-w-6xl mx-auto px-4 flex justify-between items-center mb-10">
+                     <div className="w-full max-w-6xl mx-auto px-4 flex justify-between items-center mb-10">
                         <div className="flex gap-3">
                             {socialLinks.map(link => (
                                 <Link key={link.alt} href={link.href} target="_blank">
