@@ -1,15 +1,23 @@
 "use client"
 import { yearData } from "@/constants/navData";
-import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
+  const videoMap = {
+    2023: "/video/2023.mp4",
+    2025: "/video/2025_intro.mp4",
+  };
+  const [videoSrc, setVideoSrc] = useState(videoMap[2025]); // Default to 2025 video
+
   return (
     <div className="w-full h-screen overflow-hidden relative flex flex-col items-center justify-center">
       {/*<!-- 🔴 비디오 오버레이 및 영상 --> */}
       <div className="absolute top-0 left-0 w-full h-full -z-10 opacity-60">
-        <video className="w-full h-full object-cover"
-          src="/video/2025_intro.mp4"
+        <video
+          key={videoSrc}
+          className="w-full h-full object-cover"
+          src={videoSrc}
           autoPlay loop muted playsInline
         />
       </div>
@@ -25,6 +33,11 @@ export default function Home() {
         ">
 
           {yearData.map((item) => {
+            const videoForYear = videoMap[item.year as keyof typeof videoMap];
+            const eventHandlers = videoForYear ? {
+              onMouseEnter: () => setVideoSrc(videoForYear),
+            } : {};
+
             // 1. 활성화 상태 (Link 사용)
             if (item.status === 'active' && item.path) {
               return (
@@ -32,6 +45,7 @@ export default function Home() {
                   key={item.year}
                   href={item.path}
                   className={item.year === 2025 ? "font-semibold" : ""} // 2025년만 기본적으로 밝게/굵게
+                  {...eventHandlers}
                 >
                   {item.year}
                 </Link>
@@ -43,6 +57,7 @@ export default function Home() {
               <p
                 key={item.year}
                 onClick={() => item.message && alert(item.message)}
+                {...eventHandlers}
               >
                 {item.year}
               </p>
@@ -60,6 +75,5 @@ export default function Home() {
         </p>
       </div>
     </div>
-
   )
 }

@@ -2,8 +2,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image, { ImageProps } from 'next/image';
+import Image from 'next/image';
 import { getVideoThumbnailUrl, getDesignerProfileImageUrl } from '@/lib/firebaseUtils';
+import FallbackImage from '@/components/FallbackImage';
 
 // --- Types ---
 interface StillCut {
@@ -18,33 +19,14 @@ interface Video {
     client: string;
     clientDescription: string;
     videoDescription: string;
-    vimeoId: string; // YouTube URL
-    videoThumb: string; 
+    vimeoId: string;
+    videoThumb: string;
     stillCuts?: StillCut[];
 }
 
 interface Designer {
     name: string;
 }
-
-// --- Components ---
-
-const FallbackImage = (props: { src: string, alt: string, className?: string } & Omit<ImageProps, 'src' | 'alt'>) => {
-    const { src, alt, className, ...rest } = props;
-    const [isError, setIsError] = useState(!src);
-    useEffect(() => { setIsError(!src); }, [src]);
-
-    if (isError) {
-        const placeholderClass = props.fill ? 'absolute inset-0' : '';
-        return (
-            <div className={`bg-[#1e1e1e] flex items-center justify-center animate-shimmer ${className} ${placeholderClass}`}>
-                <span className="text-sm font-medium text-gray-500">준비중...</span>
-            </div>
-        );
-    }
-
-    return <Image src={src || ""} alt={alt} className={className} onError={() => setIsError(true)} unoptimized {...rest} />;
-};
 
 function VideoViewPageContent() {
     const params = useParams();
@@ -55,6 +37,8 @@ function VideoViewPageContent() {
 
     const [video, setVideo] = useState<Video | null>(null);
     const [designers, setDesigners] = useState<Designer[]>([]);
+    const [prevVideo, setPrevVideo] = useState<Video | null>(null);
+    const [nextVideo, setNextVideo] = useState<Video | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -66,13 +50,23 @@ function VideoViewPageContent() {
                 const res = await fetch(`/data/${year}.json`);
                 if (!res.ok) throw new Error("Data fetching failed");
                 const data = await res.json();
+                
+                const allVideos: Video[] = data.비디오 || [];
+                const currentIndex = allVideos.findIndex((v: Video) => String(v.id) === String(id));
 
-                const foundVideo = data.비디오.find((v: Video) => v.id === id);
-                if (foundVideo) {
+                if (currentIndex !== -1) {
+                    const foundVideo = allVideos[currentIndex];
                     setVideo(foundVideo);
+
+                    setPrevVideo(currentIndex > 0 ? allVideos[currentIndex - 1] : null);
+                    setNextVideo(currentIndex < allVideos.length - 1 ? allVideos[currentIndex + 1] : null);
+
                     const designerNames = Array.isArray(foundVideo.designerName) ? foundVideo.designerName : [foundVideo.designerName];
                     const foundDesigners = data.디자이너.filter((d: Designer) => designerNames.includes(d.name));
                     setDesigners(foundDesigners);
+                } else {
+                    setVideo(null);
+                    setDesigners([]);
                 }
             } catch (error) {
                 console.error("Error fetching video data:", error);
@@ -98,9 +92,10 @@ function VideoViewPageContent() {
     if (!video) return <div className="text-center py-40">해당 비디오를 찾을 수 없습니다.</div>;
 
     const primaryDesignerName = Array.isArray(video.designerName) ? video.designerName[0] : video.designerName;
+    const arrowClass = "text-white text-4xl font-bold opacity-50 hover:opacity-100 transition-opacity";
 
     return (
-        <div className="py-10">
+        <div className="py-16">
             <div className="relative w-full h-[360px] md:h-[500px]">
                 <FallbackImage src={getVideoThumbnailUrl(year, primaryDesignerName, video.videoThumb)} alt={video.postName || '프로젝트 대표 이미지'} fill className="object-cover" />
             </div>
@@ -150,15 +145,42 @@ function VideoViewPageContent() {
 
             <section className="text-center text-gray-500 text-sm mt-10">
                 <div className="border-t border-gray-700 max-w-4xl mx-auto my-10"></div>
-                <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4">
-                    {designers.map(designer => (
-                        <Link key={designer.name} href={`/designerdetail?id=${encodeURIComponent(designer.name)}&year=${year}`} className="flex flex-col items-center gap-2 group">
-                             <div className="relative w-24 h-24 rounded-full overflow-hidden">
-                                <FallbackImage src={getDesignerProfileImageUrl(year, designer.name)} alt={designer.name} fill className="object-cover" />
-                            </div>
-                            <p className="font-semibold text-white group-hover:text-[#fabc11]">{designer.name}</p>
+                <div className="w-full max-w-5xl mx-auto flex justify-center items-center px-4 gap-4">
+                    {prevVideo ? (
+                        <Link href={`/works/video/${prevVideo.id}?year=${year}`} className={arrowClass}>
+                            &#10094;
                         </Link>
-                    ))}
+                    ) : (
+                        <div className="w-10 h-10"></div> // Placeholder
+                    )}
+                    <div className="grow">
+                        {designers.length === 1 ? (
+                            <Link href={`/designerdetail?id=${encodeURIComponent(designers[0].name)}&year=${year}`} className="flex flex-col md:flex-row justify-center items-center gap-16 group">
+                                <p className="text-4xl md:text-6xl font-extrabold text-white group-hover:text-[#fabc11] transition-colors order-2 md:order-1">{designers[0].name}</p>
+                                <div className="relative w-60 h-80 md:w-80 md:h-[426px] order-1 md:order-2">
+                                    <FallbackImage src={getDesignerProfileImageUrl(year, designers[0].name)} alt={designers[0].name || '디자이너 프로필'} fill className="rounded-lg object-cover" />
+                                </div>
+                            </Link>
+                        ) : (
+                            <div className="flex flex-wrap justify-center items-start gap-x-8 gap-y-4">
+                                {designers.map(designer => (
+                                    <Link key={designer.name} href={`/designerdetail?id=${encodeURIComponent(designer.name)}&year=${year}`} className="flex flex-col items-center gap-2 group">
+                                        <div className="relative w-32 h-40 rounded-lg overflow-hidden">
+                                            <FallbackImage src={getDesignerProfileImageUrl(year, designer.name)} alt={designer.name} fill className="object-cover" />
+                                        </div>
+                                        <p className="font-semibold text-white group-hover:text-[#fabc11] mt-2">{designer.name}</p>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    {nextVideo ? (
+                        <Link href={`/works/video/${nextVideo.id}?year=${year}`} className={arrowClass}>
+                            &#10095;
+                        </Link>
+                    ) : (
+                        <div className="w-10 h-10"></div> // Placeholder
+                    )}
                 </div>
                 <div className="border-t border-gray-700 max-w-4xl mx-auto my-10"></div>
             </section>
@@ -173,3 +195,4 @@ export default function VideoViewPage() {
         </Suspense>
     );
 }
+

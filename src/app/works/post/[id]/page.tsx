@@ -2,8 +2,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image, { ImageProps } from 'next/image';
+import Image from 'next/image';
 import { getPosterImageUrl, getDesignerProfileImageUrl } from '@/lib/firebaseUtils';
+import FallbackImage from '@/components/FallbackImage';
 
 // --- Types ---
 interface Post {
@@ -12,7 +13,6 @@ interface Post {
     postName: string;
     client: string;
     clientDescription: string;
-
     subDescription: string;
     posterThumb: string;
     posterFile: string;
@@ -21,24 +21,6 @@ interface Post {
 interface Designer {
     name: string;
 }
-
-// --- Components ---
-
-const FallbackImage = (props: { src: string, alt: string, className?: string } & Omit<ImageProps, 'src' | 'alt'>) => {
-    const { src, alt, className, ...rest } = props;
-    const [isError, setIsError] = useState(!src);
-    useEffect(() => { setIsError(!src); }, [src]);
-
-    if (isError) {
-        const placeholderClass = props.fill ? 'absolute inset-0' : '';
-        return (
-            <div className={`bg-[#1e1e1e] flex items-center justify-center animate-shimmer ${className} ${placeholderClass}`}>
-                <span className="text-sm font-medium text-gray-500">준비중...</span>
-            </div>
-        );
-    }
-    return <Image src={src || ""} alt={alt} className={className} onError={() => setIsError(true)} unoptimized {...rest} />;
-};
 
 function PostViewPageContent() {
     const params = useParams();
@@ -49,6 +31,8 @@ function PostViewPageContent() {
 
     const [post, setPost] = useState<Post | null>(null);
     const [designer, setDesigner] = useState<Designer | null>(null);
+    const [prevPost, setPrevPost] = useState<Post | null>(null);
+    const [nextPost, setNextPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -59,12 +43,22 @@ function PostViewPageContent() {
                 const res = await fetch(`/data/${year}.json`);
                 if (!res.ok) throw new Error("Data fetching failed");
                 const data = await res.json();
+                
+                const allPosts: Post[] = data.포스트 || [];
+                const currentIndex = allPosts.findIndex((p: Post) => String(p.id) === String(id));
 
-                const foundPost = data.포스트.find((p: Post) => p.id === id);
-                if (foundPost) {
+                if (currentIndex !== -1) {
+                    const foundPost = allPosts[currentIndex];
                     setPost(foundPost);
+
+                    setPrevPost(currentIndex > 0 ? allPosts[currentIndex - 1] : null);
+                    setNextPost(currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null);
+
                     const foundDesigner = data.디자이너.find((d: Designer) => d.name === foundPost.designerName);
                     setDesigner(foundDesigner || null);
+                } else {
+                    setPost(null);
+                    setDesigner(null);
                 }
             } catch (error) {
                 console.error("Error fetching post data:", error);
@@ -87,8 +81,10 @@ function PostViewPageContent() {
         ));
     };
 
+    const arrowClass = "text-white text-4xl font-bold opacity-50 hover:opacity-100 transition-opacity";
+
     return (
-        <div className="py-10">
+        <div className="py-16">
             <div className="relative w-full h-[360px] md:h-[500px]">
                 <FallbackImage src={getPosterImageUrl(year, designer.name, post.posterThumb)} alt={post.postName || '프로젝트 대표 이미지'} fill className="object-cover" />
             </div>
@@ -120,18 +116,37 @@ function PostViewPageContent() {
 
             <section className="text-center text-gray-500 text-sm">
                 <div className="border-t border-gray-700 max-w-4xl mx-auto my-10"></div>
-                <Link href={`/designerdetail?id=${encodeURIComponent(designer.name)}&year=${year}`} className="flex flex-col md:flex-row justify-center items-center gap-8 group">
-                    <div className="relative w-60 h-80 md:w-80 md:h-[426px]">
-                        <FallbackImage src={getDesignerProfileImageUrl(year, designer.name)} alt={designer.name || '디자이너 프로필'} fill className="rounded-lg object-cover" />
+                 <div className="w-full max-w-5xl mx-auto flex justify-center items-center px-4 gap-4">
+                    {prevPost ? (
+                        <Link href={`/works/post/${prevPost.id}?year=${year}`} className={arrowClass}>
+                            &#10094;
+                        </Link>
+                    ) : (
+                        <div className="w-10 h-10"></div> // Placeholder
+                    )}
+
+                    <div className="grow">
+                        <Link href={`/designerdetail?id=${encodeURIComponent(designer.name)}&year=${year}`} className="flex flex-col md:flex-row justify-center items-center gap-16 group">
+                            <p className="text-4xl md:text-6xl font-extrabold text-white group-hover:text-[#fabc11] transition-colors order-2 md:order-1">{designer.name}</p>
+                            <div className="relative w-60 h-80 md:w-80 md:h-[426px] order-1 md:order-2">
+                                <FallbackImage src={getDesignerProfileImageUrl(year, designer.name)} alt={designer.name || '디자이너 프로필'} fill className="rounded-lg object-cover" />
+                            </div>
+                        </Link>
                     </div>
-                    <p className="text-4xl md:text-6xl font-extrabold text-white group-hover:text-[#fabc11] transition-colors">{designer.name}</p>
-                </Link>
+
+                    {nextPost ? (
+                        <Link href={`/works/post/${nextPost.id}?year=${year}`} className={arrowClass}>
+                            &#10095;
+                        </Link>
+                    ) : (
+                        <div className="w-10 h-10"></div> // Placeholder
+                    )}
+                </div>
                 <div className="border-t border-gray-700 max-w-4xl mx-auto my-10"></div>
             </section>
         </div>
     );
 }
-
 
 export default function PostViewPage() {
     return (
