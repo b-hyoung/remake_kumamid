@@ -105,22 +105,22 @@ export default function Header() {
         }
     }, [isMenuOpen]);
 
-    const yearHeaderClass = "bg-white border-b border-gray-200";
+    const yearHeaderClass = "bg-white border-b border-[rgb(214, 214, 214)]";
     const mainHeaderClass = "bg-white";
 
     const YearLinks = () => (
-        <div className="flex justify-end items-center gap-4 text-sm font-bold p-2 pr-4 md:pr-8">
+        <div className="flex justify-end items-center gap-6 p-2 pr-4 md:pr-16">
             {yearData.map((item: years) => {
                 const isActive = item.year === currentYear;
                 if (item.status === "active" && item.path) {
                     return (
-                        <Link key={item.year} href={item.path} className={isActive ? "text-[#434343]" : "text-[#303030] hover:text-[#434343]"}>
+                        <Link key={item.year} href={item.path} className={isActive ? "text-[#ff6363] font-extrabold text-base" : "text-[14px] font-semibold text-[#6f6f6f] hover:text-[#6f6f6f]"}>
                             {item.year}
                         </Link>
                     )
                 } else {
                     return (
-                        <div key={item.year} onClick={() => alert(item.message || "준비중입니다 !")} className="text-gray-400 cursor-pointer">
+                        <div key={item.year} onClick={() => alert(item.message || "준비중입니다 !")} className="text-[#6f6f6f] text-[14px] cursor-pointer font-semibold">
                             {item.year}
                         </div>
                     )
@@ -140,9 +140,9 @@ export default function Header() {
                         </div>
 
                         {/* Main Header */}
-                        <div className={`${mainHeaderClass} relative flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[50px]`}>
+                        <div className={`${mainHeaderClass} relative flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[60px]`}>
                             {/* Logo */}
-                            <div className="logo">
+                            <div className="logo ml-[60px]">
                                 <Link href={{ pathname: '/intro', query: { year: currentYear } }}>
                                     <Image
                                         src="/img/kumamid_profile.png"
@@ -169,7 +169,7 @@ export default function Header() {
                     {/* Mobile Menu Overlay */}
                     {isMenuOpen && (
                         <div className="fixed inset-0 bg-[rgba(0,0,0,0.8)] z-[100] flex flex-col items-center justify-center">
-                            <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-4xl font-thin">
+                            <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-xl font-semibold">
                                 &times;
                             </button>
                             <nav className="flex flex-col items-center gap-6 text-center">
@@ -181,13 +181,13 @@ export default function Header() {
 
                                     return (
                                         <div key={item.page} className="flex flex-col items-center gap-2">
-                                            <Link href={item.path} className={`${isActive ? 'text-red-500 font-bold' : 'text-white font-bold'} text-2xl hover:text-red-400`} onClick={() => setIsMenuOpen(false)}>
+                                            <Link href={item.path} className={`${isActive ? 'text-[#ff6363] font-bold' : 'text-white font-bold'} text-2xl hover:text-[#ff6363]`} onClick={() => setIsMenuOpen(false)}>
                                                 {label}
                                             </Link>
                                             
                                             {isActive && (
                                                 <div 
-                                                    className="w-16 h-1 bg-red-500 origin-left transition-transform duration-500 ease-out" 
+                                                    className="w-full h-1 bg-red-500 origin-left transition-transform duration-500 ease-out" 
                                                     style={{ transform: animateUnderline ? 'scaleX(1)' : 'scaleX(0)' }} 
                                                 />
                                             )}

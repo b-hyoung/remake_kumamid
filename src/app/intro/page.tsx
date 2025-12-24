@@ -15,7 +15,7 @@ export default function Home() {
         {/* Video Overlay */}
         <div className="absolute inset-0 w-full h-full bg-black opacity-50"></div>
       </div>
-
+    
       {/* Navigation Content */}
       <div className='absolute top-1/2 left-[30%] -translate-y-1/2 z-10 flex flex-col gap-[30px] items-start text-white font-bold'>
         {introNav.map((item) => (

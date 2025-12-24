@@ -60,7 +60,7 @@ const WorksGrid = ({ items, year, type }: { items: any[], year: string, type: st
     }
 
     return (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-10 justify-items-center">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 justify-items-center">
             {items.map((item, index) => {
                 let link = '', imageUrl = '', title = '', subtitle = '', category = '';
 
@@ -155,25 +155,27 @@ function WorksPageContent() {
     ];
 
     return (
-        <div className="py-10">
-            <header className="pb-8 text-left">
-                <h1 className="text-2xl font-bold mb-8">Works</h1>
-                <nav className="flex gap-6">
-                    {tabs.map(({ id, label }) => (
-                        <button
-                            key={id}
-                            onClick={() => handleTabChange(id)}
-                            className={`relative bg-transparent border-none cursor-pointer tab-button-animation ${activeTab === id ? 'active' : ''}`}
-                        >
-                            <span className="text-[1.1rem] leading-none">{label}</span>
-                        </button>
-                    ))}
-                </nav>
-            </header>
+        <div className="flex-grow py-12 md:py-24">
+            <div className="container mx-auto px-4">
+                <header className="pb-8 text-left">
+                    <h1 className="text-2xl font-bold mb-8">Works</h1>
+                    <nav className="flex gap-6">
+                        {tabs.map(({ id, label }) => (
+                            <button
+                                key={id}
+                                onClick={() => handleTabChange(id)}
+                                className={`relative bg-transparent border-none cursor-pointer tab-button-animation ${activeTab === id ? 'active' : ''}`}
+                            >
+                                <span className="text-[1.1rem] leading-none">{label}</span>
+                            </button>
+                        ))}
+                    </nav>
+                </header>
 
-            <main className="mt-8">
-                {renderContent()}
-            </main>
+                <main className="mt-8">
+                    {renderContent()}
+                </main>
+            </div>
         </div>
     );
 }
