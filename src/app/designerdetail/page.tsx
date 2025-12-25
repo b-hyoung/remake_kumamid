@@ -36,7 +36,7 @@ const FallbackImage = (props: { src: string, alt: string, className?: string } &
 };
 
 const ProfileSection = ({ designer, year }: { designer: Designer, year: string }) => (
-    <section className="w-full px-[5%] md:px-[15%] py-8 md:py-10">
+    <section className="w-full px-[5%] md:px-[13%]">
         <h2 className="text-2xl font-bold mb-8">Designer</h2>
         <div className="flex flex-col md:flex-row items-center md:items-end gap-8">
             <div className="relative w-56 h-72 md:w-64 md:h-80 rounded-lg overflow-hidden flex-shrink-0">
@@ -53,52 +53,54 @@ const ProfileSection = ({ designer, year }: { designer: Designer, year: string }
         <hr className="border-gray-700 my-8" />
         <p className="text-center text-xl text-gray-300 italic">"{designer.profileComment}"</p>
         <hr className="border-gray-700 my-8" />
+        <h1 className="text-3xl md:text-4xl font-bold text-left mt-8">Project</h1>
     </section>
 );
 
 const ProjectsGrid = ({ projects, year }: { projects: Project[], year: string }) => (
     <section className="w-full max-w-7xl mx-auto px-4 py-8 md:py-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Project</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {projects.map(({ type, data }) => {
-                const link = `/works/${type}/${data.id}?year=${year}`;
-                const gridSpanClass = type === 'team' ? 'md:col-span-2' : '';
-
-                let title = '', typeText = '', subtext = '', imageUrl = '';
-                let typeTextColor = 'text-red-500';
-
-                if (type === 'poster') { 
-                    typeText = '포스터'; 
-                    title = data.postName;
-                    imageUrl = getPosterImageUrl(year, data.designerName, data.posterThumb);
-                } 
-                else if (type === 'video') { 
-                    typeText = '비디오'; 
-                    title = data.postName;
-                    const primaryDesigner = Array.isArray(data.designerName) ? data.designerName[0] : data.designerName;
-                    imageUrl = getVideoThumbnailUrl(year, primaryDesigner, data.thumbnail);
-                }
-                else if (type === 'team') { 
-                    typeText = 'TVCF'; 
-                    title = data.teamName; 
-                    subtext = `팀원: ${data.teamMembers.join(', ')}`;
-                    imageUrl = getTeamAssetUrl(year, data.teamfolder, data.teamThumbnail);
-                }
-
-                return (
-                    <Link key={`${type}-${data.id}`} href={link} className={`group block rounded-lg overflow-hidden bg-[#0a0a0a] border-2 border-transparent transition-all duration-200 ease-in-out hover:border-white hover:scale-[1.02] hover:shadow-lg hover:shadow-white/10 ${gridSpanClass}`}>
-                        <div className="p-4 text-left">
-                            <p className={`font-semibold ${typeTextColor}`}>{typeText}</p>
-                            <h3 className="text-lg font-bold text-white mt-1">{title}</h3>
-                            {subtext && <p className="text-base text-gray-400 mt-1">{subtext}</p>}
-                        </div>
-                        <div className="relative w-full aspect-video rounded-b-lg overflow-hidden">
-                            <FallbackImage src={imageUrl} alt={title} fill className="object-cover" />
-                        </div>
-                    </Link>
-                );
-            })}
-        </div>
+                        {projects.map(({ type, data }, index) => {
+                            const link = `/works/${type}/${data.id}?year=${year}`;
+                            const gridSpanClass = type === 'team' ? 'md:col-span-2' : '';
+            
+                            let title = '', typeText = '', subtext = '', imageUrl = '';
+                            let typeTextColor = 'text-[#ff6666]';
+            
+                            if (type === 'poster') {
+                                typeText = '포스터';
+                                title = data.postName;
+                                imageUrl = getPosterImageUrl(year, data.designerName, data.posterThumb);
+                            }
+                            else if (type === 'video') {
+                                typeText = '비디오';
+                                title = data.postName;
+                                const primaryDesigner = Array.isArray(data.designerName) ? data.designerName[0] : data.designerName;
+                                imageUrl = getVideoThumbnailUrl(year, primaryDesigner, data.thumbnail);
+                            }
+                            else if (type === 'team') {
+                                typeText = 'TVCF';
+                                title = data.teamName;
+                                subtext = `팀원: ${data.teamMembers.join(', ')}`;
+                                imageUrl = getTeamAssetUrl(year, data.teamfolder, data.teamThumbnail);
+                            }
+            
+                            return (
+                                <Link key={`${type}-${data.id}`} href={link} className={`group block rounded-lg overflow-hidden bg-[#0a0a0a] border-2 border-transparent transition-all duration-200 ease-in-out hover:border-white hover:scale-[1.02] hover:shadow-lg hover:shadow-white/10 ${gridSpanClass}`}>
+                                    <div className="text-left mb-10">
+                                        <p className={`font-semibold text-xl mb-2 ${typeTextColor} transition-all duration-300 group-hover:translate-x-[10px] group-hover:translate-y-[10px] `}>{typeText}</p>
+                                        <h3 className="text-lg font-bold text-white mt-1 transition-all duration-300 group-hover:text-gray-300 group-hover:translate-x-[10px] group-hover:mb-30 group-hover:translate-y-[10px] ">{title}</h3>
+                                        {subtext && <p className="text-base text-gray-200 mt-1 transition-all duration-300 group-hover:text-gray-300 group-hover:translate-x-[10px] group-hover:translate-y-[10px] ">{subtext}</p>}
+                                    </div>
+                                    <div className={`relative w-full rounded-xl overflow-hidden ${index < 2 ? 'h-[550px]' : 'aspect-video'}`}>
+                                        <FallbackImage src={imageUrl} alt={title} fill className="object-cover group-hover:animate-pan-zoom" />
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                            <Image src="/file.svg" alt="icon" width={24} height={24} className="absolute top-6 left-6" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            );
+                        })}        </div>
     </section>
 );
 
@@ -116,9 +118,9 @@ const OtherDesignersNav = ({ allDesigners, currentDesignerName, year }: { allDes
             <h2 className="text-2xl text-gray-300 mb-6">다른 디자이너의 포트폴리오</h2>
             <div className="flex items-center justify-center gap-4">
                 <Link href={`/designerdetail?id=${encodeURIComponent(prevDesigner.name)}&year=${year}`} className="text-4xl text-gray-500 hover:text-white transition-colors">❮</Link>
-                <div className="flex justify-center gap-4 flex-grow">
+                 <div className="flex flex-wrap justify-center gap-2 sm:gap-4 flex-grow">
                     {thumbDesigners.map(d => (
-                         <Link key={d.name} href={`/designerdetail?id=${encodeURIComponent(d.name)}&year=${year}`} className="w-24 h-32 md:w-28 md:h-36 group">
+                         <Link key={d.name} href={`/designerdetail?id=${encodeURIComponent(d.name)}&year=${year}`} className="w-[calc(50%-theme(spacing.2))] sm:w-[calc(33.33%-theme(spacing.4)/3)] md:w-36 aspect-[4/5] group">
                             <div className="relative w-full h-full rounded-md overflow-hidden border-2 border-gray-700 group-hover:border-white transition-all">
                                 <FallbackImage src={getDesignerProfileImageUrl(year, d.name)} alt={d.name} fill className="object-cover" />
                             </div>
@@ -195,7 +197,7 @@ function DesignerDetailPageContent() {
     if (!designer) return <div className="text-center py-40">해당 디자이너를 찾을 수 없습니다.</div>;
 
     return (
-        <div className="flex-grow pt-12 md:pt-24 pb-10">
+        <div className="flex-grow pt-12 md:pt-24">
             <ProfileSection designer={designer} year={year} />
             <ProjectsGrid projects={projects} year={year} />
             <OtherDesignersNav allDesigners={allDesigners} currentDesignerName={designer.name} year={year} />

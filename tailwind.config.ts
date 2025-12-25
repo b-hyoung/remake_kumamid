@@ -21,6 +21,15 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      animation: {
+        'pan-zoom': 'panZoom 1s ease-in-out forwards',
+      },
+      keyframes: {
+        panZoom: {
+          '0%': { transform: 'scale(1.7) translateX(70px)' },
+          '100%': { transform: 'scale(1.7) translateX(-70px)' },
+        },
+      },
     },
   },
   plugins: [],
