@@ -181,7 +181,7 @@ function TeamViewPageContent() {
                 
                 <div className="relative z-10 w-full max-w-6xl mx-auto px-4 text-left">
                     <div className="max-w-2xl">
-                        <p className="text-lg text-yellow-400 mb-3">{`클라이언트 : ${team.client}`}</p>
+                        <p className="text-xl font-extrabold text-[#ffa647] mb-3">{`클라이언트 : ${team.client}`}</p>
                         <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter">
                             {team.teamtitle || team.teamName}
                         </h1>
