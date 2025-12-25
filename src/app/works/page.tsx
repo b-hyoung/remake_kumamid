@@ -82,7 +82,6 @@ const WorksGrid = ({ items, year, type }: { items: any[], year: string, type: st
                     imageUrl = getTeamAssetUrl(year, item.teamfolder || item.teamName, item.teamThumbnail);
                     title = item.videoName;
                     subtitle = item.teamName;
-                    category = "TVCF";
                 }
 
                 return (

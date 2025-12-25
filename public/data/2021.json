@@ -1,0 +1,61 @@
+{
+  "디자이너": [
+    {
+      "name": "홍길동_2021",
+      "profileComment": "2021년 예시 데이터입니다.",
+      "profileEmail": "example@2021.com",
+      "profileDream": "HONG GIL DONG",
+      "videoFile": "example.png",
+      "vidioName": "2021 개인작업 예시",
+      "teamWork": "2021 팀프로젝트 예시",
+      "teamWorkEng": "2021 Team Project Example",
+      "teamProjectThum": "example.jpg"
+    }
+  ],
+  "포스트": [
+    {
+      "id": "2021-1",
+      "designerName": "홍길동_2021",
+      "postName": "2021년 포스트 예시",
+      "client": "클라이언트 예시",
+      "clientDescription": "2021년 예시 데이터입니다. 클라이언트 설명입니다.",
+      "subDescription": "2021년 예시 데이터입니다. 부가 설명입니다.",
+      "posterFile": "PosterSorce/example.jpg",
+      "posterThumb": "PosterSorce/example.jpg"
+    }
+  ],
+  "비디오": [
+    {
+      "id": "2021-1001",
+      "videoThumb": "example.jpg",
+      "vimeoId": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "designerName": [
+        "홍길동_2021"
+      ],
+      "thumbnail": "example.jpg",
+      "postName": "2021년 비디오 예시",
+      "client": "클라이언트 예시",
+      "clientDescription": "2021년 예시 데이터입니다.",
+      "videoDescription": "2021년 비디오 프로젝트에 대한 예시 설명입니다."
+    }
+  ],
+  "팀": [
+    {
+      "id": "2021-2001",
+      "teamName": "2021 예시 팀",
+      "client": "클라이언트 예시",
+      "teamfolder": "ExampleTeam",
+      "videoName": "2021 팀 비디오 예시",
+      "teamtitle": "2021년 팀 프로젝트 예시 제목",
+      "teamSubTitle": "2021년 팀 프로젝트에 대한 예시 설명입니다.",
+      "teamMembers": [
+        "홍길동_2021",
+        "김예시"
+      ],
+      "teamThumbnail": "example.jpg",
+      "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "mainImage": "example.jpg",
+      "membersImg": "example.jpg"
+    }
+  ]
+}

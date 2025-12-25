@@ -30,8 +30,26 @@ interface Designer {
     name: string;
 }
 
-// --- Reusable Components ---
+// --- Helper Functions ---
+const getEmbedUrl = (url: string): string => {
+    if (!url) return "";
 
+    // YouTube: Convert watch?v= to embed/
+    if (url.includes("youtube.com/watch?v=")) {
+        return url.replace("watch?v=", "embed/");
+    }
+    
+    // Vimeo: Convert vimeo.com/ to player.vimeo.com/video/
+    if (url.includes("vimeo.com/") && !url.includes("player.vimeo.com")) {
+        const videoId = url.substring(url.lastIndexOf('/') + 1);
+        return `https://player.vimeo.com/video/${videoId}`;
+    }
+
+    // If it's already a valid embed URL, return it as is.
+    return url;
+};
+
+// --- Reusable Components ---
 const FallbackImage = (props: { src: string, alt: string, className?: string } & Omit<ImageProps, 'src' | 'alt'>) => {
     const { src, alt, className, ...rest } = props;
     const [isError, setIsError] = useState(!src);
@@ -48,6 +66,13 @@ const FallbackImage = (props: { src: string, alt: string, className?: string } &
 
     return <Image src={src || ""} alt={alt} className={className} onError={() => setIsError(true)} unoptimized {...rest} />;
 };
+
+const DangerousHTML = ({ content, className }: { content: string, className?: string }) => {
+    if (!content) return null;
+    const sanitizedContent = content.replace(/\\n/g, '<br />');
+    return <div className={className} dangerouslySetInnerHTML={{ __html: sanitizedContent }} />;
+};
+
 
 const Section = ({ title, children, condition }: { title: string, children: React.ReactNode, condition: boolean }) => {
     if (!condition) return null;
@@ -76,7 +101,7 @@ const AutoSlider = ({ images, overlayTexts, year, teamFolder }: { images: string
                     <FallbackImage src={getTeamAssetUrl(year, teamFolder, imgFile)} alt={`Slide ${index + 1}`} fill className="rounded-lg object-contain" />
                     {overlayTexts?.[index] && (
                         <div className="absolute bottom-4 right-4 bg-black/50 text-white text-sm p-2 rounded">
-                            {overlayTexts[index]}
+                            <DangerousHTML content={overlayTexts[index]} />
                         </div>
                     )}
                 </div>
@@ -140,36 +165,51 @@ function TeamViewPageContent() {
     const teamFolder = team.teamfolder || team.teamName;
 
     return (
-        <div className="flex-grow pt-24 pb-10">
-            <div className="relative w-full h-[360px] md:h-[500px]">
-                <FallbackImage src={getTeamAssetUrl(year, teamFolder, team.mainImage)} alt={team.teamtitle || team.teamName} fill className="object-cover" />
-            </div>
-
-            <section className="w-full max-w-4xl mx-auto px-6 py-10 md:py-16 text-center">
-                <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tighter">{team.teamtitle || team.teamName}</h1>
-                <p className="text-lg text-yellow-500 mb-4">{`클라이언트 : ${team.client}`}</p>
-                <p className="text-md text-gray-400 mb-6">{team.teamMembers.join(", ")}</p>
-                <div className="text-lg text-gray-300 leading-relaxed space-y-4">
-                    <h2 className='text-xl text-white font-semibold mb-4'>Concept</h2>
-                    <p>{team.teamSubTitle}</p>
+        <div className="flex-grow pb-10">
+            {/* Hero Section */}
+            <section className="relative w-full h-[550px] md:h-[650px] flex items-center">
+                <div className="absolute inset-0">
+                    <FallbackImage 
+                        src={getTeamAssetUrl(year, teamFolder, team.mainImage)} 
+                        alt={team.teamtitle || team.teamName} 
+                        fill 
+                        className="object-cover" 
+                        priority 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+                </div>
+                
+                <div className="relative z-10 w-full max-w-6xl mx-auto px-4 text-left">
+                    <div className="max-w-2xl">
+                        <p className="text-lg text-yellow-400 mb-3">{`클라이언트 : ${team.client}`}</p>
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter">
+                            {team.teamtitle || team.teamName}
+                        </h1>
+                        <div className="text-md text-gray-200 mb-6">
+                            <span className="font-semibold">Members:</span> {team.teamMembers.join(", ")}
+                        </div>
+                        <div className="text-lg text-gray-300 leading-relaxed">
+                            <DangerousHTML content={team.teamSubTitle} />
+                        </div>
+                    </div>
                 </div>
             </section>
-
+            
             <Section title="" condition={!!team.video}>
-                <div className="aspect-video w-full max-w-6xl mx-auto">
-                    <iframe src={team.video.replace("watch?v=", "embed/")} className="w-full h-full rounded-lg" frameBorder="0" allow="autoplay; fullscreen" allowFullScreen></iframe>
+                <div className="aspect-video w-full max-w-6xl mx-auto mt-16">
+                    <iframe src={getEmbedUrl(team.video)} className="w-full h-full rounded-lg shadow-2xl" frameBorder="0" allow="autoplay; fullscreen" allowFullScreen></iframe>
                 </div>
-                {team["v-text"] && <p className="mt-4 text-gray-400">{team["v-text"]}</p>}
+                {team["v-text"] && <DangerousHTML content={team["v-text"]} className="mt-6 text-gray-400 max-w-4xl mx-auto" />}
             </Section>
 
             <Section title="Storyboard" condition={!!team.storyBord?.length}>
                 <AutoSlider images={team.storyBord || []} year={year} teamFolder={teamFolder} />
-                {team["s-text"] && <p className="mt-4 text-gray-400">{team["s-text"]}</p>}
+                {team["s-text"] && <DangerousHTML content={team["s-text"]} className="mt-6 text-gray-400 max-w-4xl mx-auto" />}
             </Section>
 
             <Section title="Memorise" condition={!!team.memoRise?.length}>
                 <AutoSlider images={team.memoRise || []} overlayTexts={team['m-inner-text']} year={year} teamFolder={teamFolder} />
-                {team["m-text"] && <p className="mt-4 text-gray-400">{team["m-text"]}</p>}
+                {team["m-text"] && <DangerousHTML content={team["m-text"]} className="mt-6 text-gray-400 max-w-4xl mx-auto" />}
             </Section>
 
             {team.membersImg && (
@@ -187,7 +227,7 @@ function TeamViewPageContent() {
 
             <Section title="Team PPM Note" condition={!!team.teamPPMNote?.length}>
                 <Carousel images={team.teamPPMNote || []} year={year} teamFolder={teamFolder} />
-                {team["ppt-text"] && <p className="mt-4 text-gray-400">{team["ppt-text"]}</p>}
+                {team["ppt-text"] && <DangerousHTML content={team["ppt-text"]} className="mt-6 text-gray-400 max-w-4xl mx-auto" />}
             </Section>
 
             <Section title="Designers" condition={!!designers.length}>
