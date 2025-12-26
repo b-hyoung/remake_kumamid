@@ -173,7 +173,7 @@ function TeamViewPageContent() {
                         src={getTeamAssetUrl(year, teamFolder, team.mainImage)} 
                         alt={team.teamtitle || team.teamName} 
                         fill 
-                        className="object-cover" 
+                        className="object-cover opacity-80" 
                         priority 
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
