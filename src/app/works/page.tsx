@@ -53,6 +53,20 @@ const FallbackImage = (props: { src: string, alt: string, className?: string } &
     return <Image src={src || ""} alt={alt} className={className} onError={() => setIsError(true)} unoptimized {...rest} />;
 };
 
+const TextWithBreaks = ({ text }: { text: string }) => {
+    if (!text) return null;
+    return (
+        <>
+            {text.split('<br>').map((line, index, arr) => (
+                <React.Fragment key={index}>
+                    {line}
+                    {index < arr.length - 1 && <br />}
+                </React.Fragment>
+            ))}
+        </>
+    );
+};
+
 
 const WorksGrid = ({ items, year, type }: { items: any[], year: string, type: string }) => {
     if (!items || items.length === 0) {
@@ -91,8 +105,8 @@ const WorksGrid = ({ items, year, type }: { items: any[], year: string, type: st
                             <FallbackImage src={imageUrl} alt={title || '작품 썸네일'} fill className="rounded-lg object-cover" />
                         </div>
                         <h3 className="mt-3 text-[13px] font-medium text-gray-300 leading-tight">{category}</h3>
-                        <h3 className="text-base font-semibold text-white mt-1"><span>{title}</span></h3>
-                        <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
+                        <h3 className="text-base font-semibold text-white mt-1"><span><TextWithBreaks text={title} /></span></h3>
+                        <p className="text-sm text-gray-400 mt-1"><TextWithBreaks text={subtitle} /></p>
                     </Link>
                 );
             })}

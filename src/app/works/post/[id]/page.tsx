@@ -91,8 +91,8 @@ function PostViewPageContent() {
             </div>
 
             <section className="w-full max-w-4xl mx-auto px-6 py-10 md:py-16">
-                <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tighter">{post.postName}</h1>
-                <p className="text-lg text-gray-400 mb-6">{`클라이언트 : ${post.client}`}</p>
+                <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tighter">{renderDescription(post.postName)}</h1>
+                <p className="text-lg text-gray-400 mb-6">{`클라이언트 : `}{renderDescription(post.client)}</p>
                 
                 <div className="text-lg text-gray-300 leading-relaxed space-y-4">
                     <hr className="border-gray-700 my-6" />
