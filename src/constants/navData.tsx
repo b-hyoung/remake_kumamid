@@ -26,9 +26,8 @@ export const headerNav = (currentYear: number): headerList[] => [
     { page: "thanksTo", label: "Thanks to", path: { pathname: "/thanksto", query: { year: currentYear } } },
 ];
     
-    export const introNav: IntroNavItem[] = [
-        { label: 'Works', path: { pathname: '/works', query: { year: 2025 } } },
-        { label: 'Designer', path: { pathname: '/designer', query: { year: 2025 } } },
-        { label: 'Thanks To', path: { pathname: '/thanksto', query: { year: 2025 } } },
-    ];
-    
+    export const introNav = (currentYear: number): IntroNavItem[] => [
+        { label: 'Works', path: { pathname: '/works', query: { year: currentYear } } },
+        { label: 'Designer', path: { pathname: '/designer', query: { year: currentYear } } },
+        { label: 'Thanks To', path: { pathname: '/thanksto', query: { year: currentYear } } },
+    ];    
