@@ -73,7 +73,8 @@ function PostViewPageContent() {
     if (!post || !designer) return <div className="text-center py-40">해당 포스트를 찾을 수 없습니다.</div>;
 
     const renderDescription = (htmlString: string) => {
-        return htmlString.split('<br>').map((line, index, arr) => (
+        if (!htmlString) return null;
+        return htmlString.split(/<br\s*\/?>/gi).map((line, index, arr) => (
             <React.Fragment key={index}>
                 {line}
                 {index < arr.length - 1 && <br />}

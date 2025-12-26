@@ -80,7 +80,7 @@ function VideoViewPageContent() {
     
     const renderDescription = (htmlString: string) => {
         if (!htmlString) return null;
-        return htmlString.split('<br/>').map((line, index, arr) => (
+        return htmlString.split(/<br\s*\/?>/gi).map((line, index, arr) => (
             <React.Fragment key={index}>
                 {line}
                 {index < arr.length - 1 && <br />}

@@ -234,7 +234,7 @@ function TeamViewPageContent() {
                 <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4">
                     {designers.map(designer => (
                         <Link key={designer.name} href={`/designerdetail?id=${encodeURIComponent(designer.name)}&year=${year}`} className="flex flex-col items-center gap-2 group">
-                            <div className="relative w-60 md:h-80 group rounded-lg overflow-hidden">
+                            <div className="relative w-60 h-80 group rounded-lg overflow-hidden">
                                 <FallbackImage src={getDesignerProfileImageUrl(year, designer.name)} alt={designer.name} fill className="object-cover" />
                             </div>
                             <p className="font-semibold text-white group-hover:text-[#fabc11] mt-2">{designer.name}</p>
